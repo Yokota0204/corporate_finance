@@ -1,0 +1,23 @@
+{
+  "scriptId": "スクリプトID",
+  "rootDir": "./dist",
+  "scriptExtensions": [
+    ".js",
+    ".gs",
+    ".ts"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [
+    "models.ts",
+    "consts/pl.ts",
+    "consts/bs.ts",
+    "debug.ts",
+    "code.ts"
+  ],
+  "skipSubdirectories": false
+}
