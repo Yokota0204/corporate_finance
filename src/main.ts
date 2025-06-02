@@ -51,6 +51,14 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     throw "損益計算シートを取得できませんでした。";
   }
 
+  // 貸借対照表のシートを取得
+  const bsSh: Sheet | null = ss.getSheetByName("資産");
+
+  // 資産シートが存在しない場合はエラー
+  if (!bsSh) {
+    throw "資産シートを取得できませんでした。";
+  }
+
   // 損益計算シートのA列の最終行を取得
   const plLastRow: number = getLastRowInColumn(plSh, MONTH_COL_IN_PL_SHEET);
   log("info", `損益計算シートのA列の最終行: ${plLastRow}`);
@@ -66,7 +74,19 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
   const beforeFs: FinancialStatement | undefined = data.before;
   const afterFs: FinancialStatement = data.after;
 
-  // レスポンスの損益計算書の数値をシートに出力
+  // 資産シートのA列の最終行を取得
+  const bsLastRow: number = getLastRowInColumn(bsSh, MONTH_COL_IN_BS_SHEET);
+  log("info", `資産シートのA列の最終行: ${bsLastRow}`);
+
+  // 日付から利益剰余金までのセルの範囲を取得
+  const bsRange: Range = bsSh.getRange(
+    bsLastRow + 1,
+    MONTH_COL_IN_BS_SHEET,
+    setRowCount,
+    RETAINED_EARNINGS_COL_IN_BS_SHEET - MONTH_COL_IN_BS_SHEET + 1,
+  );
+
+  // レスポンスの数値をシートに出力
   if (beforeFs) {
     plRange.setValues([
       [
@@ -92,44 +112,6 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.pl.net,
       ],
     ]);
-  } else {
-    plRange.setValues([
-      [
-        afterFs.month,
-        afterFs.pl.sales,
-        afterFs.pl.cost,
-        afterFs.pl.sellingExpenses,
-        afterFs.pl.nonOperatingIncome,
-        afterFs.pl.nonOperatingExpenses,
-        afterFs.pl.specialIncome,
-        afterFs.pl.specialLosses,
-        afterFs.pl.net,
-      ],
-    ]);
-  }
-
-  // 貸借対照表のシートを取得
-  const bsSh: Sheet | null = ss.getSheetByName("資産");
-
-  // 資産シートが存在しない場合はエラー
-  if (!bsSh) {
-    throw "資産シートを取得できませんでした。";
-  }
-
-  // 資産シートのA列の最終行を取得
-  const bsLastRow: number = getLastRowInColumn(bsSh, MONTH_COL_IN_BS_SHEET);
-  log("info", `資産シートのA列の最終行: ${bsLastRow}`);
-
-  // 日付から利益剰余金までのセルの範囲を取得
-  const bsRange: Range = bsSh.getRange(
-    bsLastRow + 1,
-    MONTH_COL_IN_BS_SHEET,
-    setRowCount,
-    RETAINED_EARNINGS_COL_IN_BS_SHEET - MONTH_COL_IN_BS_SHEET + 1,
-  );
-
-  // レスポンスの資産負債表の数値をシートに出力
-  if (beforeFs) {
     bsRange.setValues([
       [
         beforeFs.month,
@@ -161,6 +143,19 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
       ],
     ]);
   } else {
+    plRange.setValues([
+      [
+        afterFs.month,
+        afterFs.pl.sales,
+        afterFs.pl.cost,
+        afterFs.pl.sellingExpenses,
+        afterFs.pl.nonOperatingIncome,
+        afterFs.pl.nonOperatingExpenses,
+        afterFs.pl.specialIncome,
+        afterFs.pl.specialLosses,
+        afterFs.pl.net,
+      ],
+    ]);
     bsRange.setValues([
       [
         afterFs.month,
