@@ -59,6 +59,14 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     throw "資産シートを取得できませんでした。";
   }
 
+  // 損益計算書のシートを取得
+  const cfSh: Sheet | null = ss.getSheetByName("キャッシュフロー");
+
+  // キャッシュフローシートが存在しない場合はエラー
+  if (!cfSh) {
+    throw "キャッシュフローシートを取得できませんでした。";
+  }
+
   // 損益計算シートのA列の最終行を取得
   const plLastRow: number = getLastRowInColumn(plSh, MONTH_COL_IN_PL_SHEET);
   log("info", `損益計算シートのA列の最終行: ${plLastRow}`);
@@ -71,9 +79,6 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     NET_COL_IN_PL_SHEET - MONTH_COL_IN_PL_SHEET + 1,
   );
 
-  const beforeFs: FinancialStatement | undefined = data.before;
-  const afterFs: FinancialStatement = data.after;
-
   // 資産シートのA列の最終行を取得
   const bsLastRow: number = getLastRowInColumn(bsSh, MONTH_COL_IN_BS_SHEET);
   log("info", `資産シートのA列の最終行: ${bsLastRow}`);
@@ -85,6 +90,21 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     setRowCount,
     RETAINED_EARNINGS_COL_IN_BS_SHEET - MONTH_COL_IN_BS_SHEET + 1,
   );
+
+  // キャッシュフローのA列の最終行を取得
+  const cfLastRow: number = getLastRowInColumn(cfSh, MONTH_COL_IN_CF_SHEET);
+  log("info", `キャッシュフローシートのA列の最終行: ${cfLastRow}`);
+
+  // 日付から財務キャッシュフローまでのセルの範囲を取得
+  const cfRange: Range = cfSh.getRange(
+    cfLastRow + 1,
+    MONTH_COL_IN_CF_SHEET,
+    setRowCount,
+    FINANCING_COL_IN_CF_SHEET - MONTH_COL_IN_CF_SHEET + 1,
+  );
+
+  const beforeFs: FinancialStatement | undefined = data.before;
+  const afterFs: FinancialStatement = data.after;
 
   // レスポンスの数値をシートに出力
   if (beforeFs) {
@@ -142,6 +162,20 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.bs.retainedEarnings,
       ],
     ]);
+    cfRange.setValues([
+      [
+        beforeFs.month,
+        beforeFs.cf.operating,
+        beforeFs.cf.investing,
+        beforeFs.cf.financing,
+      ],
+      [
+        afterFs.month,
+        afterFs.cf.operating,
+        afterFs.cf.investing,
+        afterFs.cf.financing,
+      ],
+    ]);
   } else {
     plRange.setValues([
       [
@@ -170,6 +204,14 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.bs.currentLiabilities,
         afterFs.bs.nonCurrentLiabilities,
         afterFs.bs.retainedEarnings,
+      ],
+    ]);
+    cfRange.setValues([
+      [
+        afterFs.month,
+        afterFs.cf.operating,
+        afterFs.cf.investing,
+        afterFs.cf.financing,
       ],
     ]);
   }
