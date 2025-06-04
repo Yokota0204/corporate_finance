@@ -29,6 +29,9 @@ type CashFlow = {
   operating: number;
   investing: number;
   financing: number;
+  repaymentsOfLongTermBorrowings: number;
+  repaymentsOfShortTermBorrowings: number;
+  proceedsFromShortTermBorrowings: number;
 };
 type FinancialStatement = {
   month: string;
