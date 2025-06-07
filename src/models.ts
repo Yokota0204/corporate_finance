@@ -32,6 +32,7 @@ type CashFlow = {
   repaymentsOfLongTermBorrowings: number;
   repaymentsOfShortTermBorrowings: number;
   proceedsFromShortTermBorrowings: number;
+  dividendsPaid: number;
 };
 type FinancialStatement = {
   month: string;

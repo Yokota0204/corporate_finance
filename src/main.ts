@@ -100,7 +100,7 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     cfLastRow + 1,
     MONTH_COL_IN_CF_SHEET,
     setRowCount,
-    REPAYMENT_OF_LONG_TERM_BORROWINGS_COL_IN_CF_SHEET - MONTH_COL_IN_CF_SHEET + 1,
+    DIVIDENDS_PAID_COL_IN_CF_SHEET - MONTH_COL_IN_CF_SHEET + 1,
   );
 
   const beforeFs: FinancialStatement | undefined = data.before;
@@ -171,6 +171,7 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         beforeFs.cf.proceedsFromShortTermBorrowings,
         beforeFs.cf.repaymentsOfShortTermBorrowings,
         beforeFs.cf.repaymentsOfLongTermBorrowings,
+        beforeFs.cf.dividendsPaid,
       ],
       [
         afterFs.month,
@@ -180,6 +181,7 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.cf.proceedsFromShortTermBorrowings,
         afterFs.cf.repaymentsOfShortTermBorrowings,
         afterFs.cf.repaymentsOfLongTermBorrowings,
+        afterFs.cf.dividendsPaid,
       ],
     ]);
   } else {
@@ -221,6 +223,7 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.cf.proceedsFromShortTermBorrowings,
         afterFs.cf.repaymentsOfShortTermBorrowings,
         afterFs.cf.repaymentsOfLongTermBorrowings,
+        afterFs.cf.dividendsPaid,
       ],
     ]);
   }
