@@ -51,6 +51,22 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     throw "損益計算シートを取得できませんでした。";
   }
 
+  // 貸借対照表のシートを取得
+  const bsSh: Sheet | null = ss.getSheetByName("資産");
+
+  // 資産シートが存在しない場合はエラー
+  if (!bsSh) {
+    throw "資産シートを取得できませんでした。";
+  }
+
+  // 損益計算書のシートを取得
+  const cfSh: Sheet | null = ss.getSheetByName("キャッシュフロー");
+
+  // キャッシュフローシートが存在しない場合はエラー
+  if (!cfSh) {
+    throw "キャッシュフローシートを取得できませんでした。";
+  }
+
   // 損益計算シートのA列の最終行を取得
   const plLastRow: number = getLastRowInColumn(plSh, MONTH_COL_IN_PL_SHEET);
   log("info", `損益計算シートのA列の最終行: ${plLastRow}`);
@@ -63,10 +79,34 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     NET_COL_IN_PL_SHEET - MONTH_COL_IN_PL_SHEET + 1,
   );
 
+  // 資産シートのA列の最終行を取得
+  const bsLastRow: number = getLastRowInColumn(bsSh, MONTH_COL_IN_BS_SHEET);
+  log("info", `資産シートのA列の最終行: ${bsLastRow}`);
+
+  // 日付から利益剰余金までのセルの範囲を取得
+  const bsRange: Range = bsSh.getRange(
+    bsLastRow + 1,
+    MONTH_COL_IN_BS_SHEET,
+    setRowCount,
+    RETAINED_EARNINGS_COL_IN_BS_SHEET - MONTH_COL_IN_BS_SHEET + 1,
+  );
+
+  // キャッシュフローのA列の最終行を取得
+  const cfLastRow: number = getLastRowInColumn(cfSh, MONTH_COL_IN_CF_SHEET);
+  log("info", `キャッシュフローシートのA列の最終行: ${cfLastRow}`);
+
+  // 日付から財務キャッシュフローまでのセルの範囲を取得
+  const cfRange: Range = cfSh.getRange(
+    cfLastRow + 1,
+    MONTH_COL_IN_CF_SHEET,
+    setRowCount,
+    DIVIDENDS_PAID_COL_IN_CF_SHEET - MONTH_COL_IN_CF_SHEET + 1,
+  );
+
   const beforeFs: FinancialStatement | undefined = data.before;
   const afterFs: FinancialStatement = data.after;
 
-  // レスポンスの損益計算書の数値をシートに出力
+  // レスポンスの数値をシートに出力
   if (beforeFs) {
     plRange.setValues([
       [
@@ -92,44 +132,6 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.pl.net,
       ],
     ]);
-  } else {
-    plRange.setValues([
-      [
-        afterFs.month,
-        afterFs.pl.sales,
-        afterFs.pl.cost,
-        afterFs.pl.sellingExpenses,
-        afterFs.pl.nonOperatingIncome,
-        afterFs.pl.nonOperatingExpenses,
-        afterFs.pl.specialIncome,
-        afterFs.pl.specialLosses,
-        afterFs.pl.net,
-      ],
-    ]);
-  }
-
-  // 貸借対照表のシートを取得
-  const bsSh: Sheet | null = ss.getSheetByName("資産");
-
-  // 資産シートが存在しない場合はエラー
-  if (!bsSh) {
-    throw "資産シートを取得できませんでした。";
-  }
-
-  // 資産シートのA列の最終行を取得
-  const bsLastRow: number = getLastRowInColumn(bsSh, MONTH_COL_IN_BS_SHEET);
-  log("info", `資産シートのA列の最終行: ${bsLastRow}`);
-
-  // 日付から利益剰余金までのセルの範囲を取得
-  const bsRange: Range = bsSh.getRange(
-    bsLastRow + 1,
-    MONTH_COL_IN_BS_SHEET,
-    setRowCount,
-    RETAINED_EARNINGS_COL_IN_BS_SHEET - MONTH_COL_IN_BS_SHEET + 1,
-  );
-
-  // レスポンスの資産負債表の数値をシートに出力
-  if (beforeFs) {
     bsRange.setValues([
       [
         beforeFs.month,
@@ -160,7 +162,42 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.bs.retainedEarnings,
       ],
     ]);
+    cfRange.setValues([
+      [
+        beforeFs.month,
+        beforeFs.cf.operating,
+        beforeFs.cf.investing,
+        beforeFs.cf.financing,
+        beforeFs.cf.proceedsFromShortTermBorrowings,
+        beforeFs.cf.repaymentsOfShortTermBorrowings,
+        beforeFs.cf.repaymentsOfLongTermBorrowings,
+        beforeFs.cf.dividendsPaid,
+      ],
+      [
+        afterFs.month,
+        afterFs.cf.operating,
+        afterFs.cf.investing,
+        afterFs.cf.financing,
+        afterFs.cf.proceedsFromShortTermBorrowings,
+        afterFs.cf.repaymentsOfShortTermBorrowings,
+        afterFs.cf.repaymentsOfLongTermBorrowings,
+        afterFs.cf.dividendsPaid,
+      ],
+    ]);
   } else {
+    plRange.setValues([
+      [
+        afterFs.month,
+        afterFs.pl.sales,
+        afterFs.pl.cost,
+        afterFs.pl.sellingExpenses,
+        afterFs.pl.nonOperatingIncome,
+        afterFs.pl.nonOperatingExpenses,
+        afterFs.pl.specialIncome,
+        afterFs.pl.specialLosses,
+        afterFs.pl.net,
+      ],
+    ]);
     bsRange.setValues([
       [
         afterFs.month,
@@ -175,6 +212,18 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
         afterFs.bs.currentLiabilities,
         afterFs.bs.nonCurrentLiabilities,
         afterFs.bs.retainedEarnings,
+      ],
+    ]);
+    cfRange.setValues([
+      [
+        afterFs.month,
+        afterFs.cf.operating,
+        afterFs.cf.investing,
+        afterFs.cf.financing,
+        afterFs.cf.proceedsFromShortTermBorrowings,
+        afterFs.cf.repaymentsOfShortTermBorrowings,
+        afterFs.cf.repaymentsOfLongTermBorrowings,
+        afterFs.cf.dividendsPaid,
       ],
     ]);
   }

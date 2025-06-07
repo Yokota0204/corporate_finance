@@ -25,10 +25,20 @@ type BalanceSheet = {
   nonCurrentLiabilities: number;
   retainedEarnings: number;
 };
+type CashFlow = {
+  operating: number;
+  investing: number;
+  financing: number;
+  repaymentsOfLongTermBorrowings: number;
+  repaymentsOfShortTermBorrowings: number;
+  proceedsFromShortTermBorrowings: number;
+  dividendsPaid: number;
+};
 type FinancialStatement = {
   month: string;
   pl: ProfitAndLoss;
   bs: BalanceSheet;
+  cf: CashFlow;
 };
 type RequestBody = {
   before?: FinancialStatement;

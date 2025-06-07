@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "find ./dist -delete && tsc && cp ./appsscript.json ./dist/appsscript.json",
+    "build": "([ -d ./dist ] && find ./dist -delete || true) && tsc && cp ./appsscript.json ./dist/appsscript.json",
     "push": "clasp push",
     "deploy": "npm run build && npm run push"
   },
