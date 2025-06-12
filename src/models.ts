@@ -35,6 +35,8 @@ type CashFlow = {
   repaymentsOfShortTermBorrowings: number;
   repaymentsOfLongTermBorrowings: number;
   repaymentsOfBonds: number;
+  purchaseOfTreasuryStock: number;
+  retirementOfTreasuryStock: number;
   dividendsPaid: number;
 };
 type FinancialStatement = {
