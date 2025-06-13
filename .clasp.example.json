@@ -13,11 +13,14 @@
     ".json"
   ],
   "filePushOrder": [
-    "models.ts",
-    "consts/pl.ts",
-    "consts/bs.ts",
-    "debug.ts",
-    "code.ts"
+    "dist/models.js",
+    "dist/consts/pl.js",
+    "dist/consts/bs.js",
+    "dist/consts/cf.js",
+    "dist/debug.js",
+    "dist/api.js",
+    "dist/manual.js",
+    "dist/main.js"
   ],
   "skipSubdirectories": false
 }

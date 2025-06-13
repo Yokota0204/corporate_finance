@@ -251,3 +251,12 @@ function doPost(e: GoogleAppsScript.Events.DoPost) {
     }))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+// メニューにGASを追加
+function onOpen(): void {
+  const ui: GoogleAppsScript.Base.Ui = SpreadsheetApp.getUi();
+  ui.createMenu('GAS')
+    .addItem('ファイル名を変更', 'setSpreadSheetName')
+    .addItem('ファイル名をもとに戻す', 'resetSpreadSheetName')
+    .addToUi();
+}
