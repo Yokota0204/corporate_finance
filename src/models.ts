@@ -1,6 +1,7 @@
 type Spreadsheet = GoogleAppsScript.Spreadsheet.Spreadsheet;
 type Sheet = GoogleAppsScript.Spreadsheet.Sheet;
 type Range = GoogleAppsScript.Spreadsheet.Range;
+type HttpMethod = GoogleAppsScript.URL_Fetch.HttpMethod;
 
 type ProfitAndLoss = {
   sales: number;
@@ -35,6 +36,8 @@ type CashFlow = {
   repaymentsOfShortTermBorrowings: number;
   repaymentsOfLongTermBorrowings: number;
   repaymentsOfBonds: number;
+  purchaseOfTreasuryStock: number;
+  retirementOfTreasuryStock: number;
   dividendsPaid: number;
 };
 type FinancialStatement = {
