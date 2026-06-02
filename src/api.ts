@@ -3,6 +3,7 @@ type ApiRequestOptions = {
   payload?: Record<string, unknown>;
   query?: Record<string, string | number | boolean>;
   method?: HttpMethod;
+  headers?: Record<string, string>;
 };
 
 class ApiRequest {
@@ -23,6 +24,7 @@ class ApiRequest {
         headers: {
           "Content-Type": "application/json",
           "Authorization": token ? "Bearer " + token : "",
+          ...options.headers,
         },
         payload: payload ? JSON.stringify(payload) : undefined,
       }).getContentText();
@@ -48,39 +50,14 @@ class ApiRequest {
   }
 }
 
-function getRefreshToken() {
-  try {
-    return new ApiRequest().post<{ refreshToken: string }>(
-      "https://api.jquants.com/v1/token/auth_user",
-      {
-        payload: {
-          mailaddress: "yokota.02210301@gmail.com",
-          password: "nnVu8KyFRurx",
-        },
-      }
-    ).refreshToken;
-  } catch (e) {
-    throw e;
-  }
-}
-
-function getIdToken(token: string): string {
-  try {
-    return new ApiRequest().post<{ idToken: string }>(
-      "https://api.jquants.com/v1/token/auth_refresh",
-      { query: { refreshtoken: token, }, }
-    ).idToken;
-  } catch (e) {
-    throw e;
-  }
-}
+const J_QUANTS_API_TOKEN = "api_token";
 
 type CompanyInfo = {
-  info: {
+  data: {
     Date: string;
     Code: string;
-    CompanyName: string;
-    CompanyNameEnglish: string;
+    CoName: string;
+    CoNameEn: string;
     Sector17Code: string;
     Sector17CodeName: string;
     Sector33Code: string;
@@ -88,16 +65,17 @@ type CompanyInfo = {
     ScaleCategory: string;
     MarketCode: string;
     MarketCodeName: string;
-    MarginCode: string;
-    MarginCodeName: string;
   }[];
 };
 
-function getCompanyByCode(token: string, code: string) {
+function getCompanyByCode(code: string) {
   try {
     return new ApiRequest().get<CompanyInfo>(
-      "https://api.jquants.com/v1/listed/info",
-      { query: { code, }, token, }
+      "https://api.jquants.com/v2/equities/master",
+      {
+        query: { code },
+        headers: { "x-api-key": J_QUANTS_API_TOKEN },
+      }
     );
   } catch (e) {
     throw e;
@@ -108,13 +86,10 @@ function getCompanyName(code: string) {
   if (!code) {
     return "";
   }
-  const refToken = getRefreshToken();
-  const token = getIdToken(refToken);
-
   try {
-    const companyInfo = getCompanyByCode(token, code);
+    const companyInfo = getCompanyByCode(code);
     log("log", JSON.stringify(companyInfo));
-    return companyInfo.info[0].CompanyName;
+    return companyInfo.data[0].CoName;
   } catch (e) {
     throw e;
   }
@@ -122,7 +97,7 @@ function getCompanyName(code: string) {
 
 // 財務情報を取得
 type FinanceStatement = {
-  statements: {
+  data: {
     DisclosedDate: string;
     DisclosedTime: string;
     LocalCode: string;
@@ -230,15 +205,18 @@ type FinanceStatement = {
     NextYearForecastNonConsolidatedOrdinaryProfit: string;
     NextYearForecastNonConsolidatedProfit: string;
     NextYearForecastNonConsolidatedEarningsPerShare: string;
-  }[],
+  }[];
   pagination_key: string;
 };
 
-function getFinanceStatement(token: string, code: string) {
+function getFinanceStatement(code: string) {
   try {
     return new ApiRequest().get<FinanceStatement>(
-      "https://api.jquants.com/v1/fins/statements",
-      { query: { code, }, token, }
+      "https://api.jquants.com/v2/fins/summary",
+      {
+        query: { code },
+        headers: { "x-api-key": J_QUANTS_API_TOKEN },
+      }
     );
   } catch (e) {
     throw e;
