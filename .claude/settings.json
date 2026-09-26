@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git merge:*)",
+      "Bash(git reset:*)",
+      "Bash(awk * > *)",
+      "Bash(awk * >> *)",
+      "Edit(storage/**)",
+      "Edit(.env*)",
+      "Edit(.claude/**)",
+      "Edit(dist/**)",
+      "Edit(node_modules/**)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git rebase:*)",
+      "Bash(rm:*)",
+      "Bash(/bin/rm:*)"
+    ],
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:*)",
+      "Bash(* --version)",
+      "Bash(* -v)",
+      "Bash(* -V)",
+      "Bash(* --help *)",
+      "Bash(* --help)",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(lsof:*)",
+      "Bash(cat:*)",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(sed -n *)",
+      "Bash(touch:*)",
+      "Bash(curl:*)",
+      "Bash(make:*)",
+      "Bash(ssh-add:*)",
+      "Edit(*)",
+      "Read(*)"
+    ]
+  }
+}
