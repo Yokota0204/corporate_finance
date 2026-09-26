@@ -47,6 +47,7 @@ type FinancialStatement = {
   cf: CashFlow;
 };
 type RequestBody = {
+  statements?: FinancialStatement[];
   before?: FinancialStatement;
   after?: FinancialStatement;
 };
