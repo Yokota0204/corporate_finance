@@ -18,6 +18,8 @@ export type Gas = {
   RETAINED_EARNINGS_COL_IN_BS_SHEET: number;
   MONTH_COL_IN_CF_SHEET: number;
   LAST_INPUT_COL_IN_CF_SHEET: number;
+  getCompanyByCode: typeof getCompanyByCode;
+  getFinanceStatement: typeof getFinanceStatement;
 };
 
 const EXPOSED_NAMES: (keyof Gas)[] = [
@@ -32,6 +34,8 @@ const EXPOSED_NAMES: (keyof Gas)[] = [
   "RETAINED_EARNINGS_COL_IN_BS_SHEET",
   "MONTH_COL_IN_CF_SHEET",
   "LAST_INPUT_COL_IN_CF_SHEET",
+  "getCompanyByCode",
+  "getFinanceStatement",
 ];
 
 // src 配下の .ts をすべて取得（consts/ を含む）

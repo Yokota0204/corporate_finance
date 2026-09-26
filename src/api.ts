@@ -50,7 +50,16 @@ class ApiRequest {
   }
 }
 
-const J_QUANTS_API_TOKEN = "api_token";
+/**
+ * スクリプトプロパティ「J_QUANTS_TOKEN」から J-Quants API のトークンを取得
+ */
+function getJQuantsToken(): string {
+  const token: string | null = PropertiesService.getScriptProperties().getProperty("J_QUANTS_TOKEN");
+  if (!token) {
+    throw new Error("J-Quantsのトークンを取得できませんでした。");
+  }
+  return token;
+}
 
 type CompanyInfo = {
   data: {
@@ -74,7 +83,7 @@ function getCompanyByCode(code: string) {
       "https://api.jquants.com/v2/equities/master",
       {
         query: { code },
-        headers: { "x-api-key": J_QUANTS_API_TOKEN },
+        headers: { "x-api-key": getJQuantsToken() },
       }
     );
   } catch (e) {
@@ -215,7 +224,7 @@ function getFinanceStatement(code: string) {
       "https://api.jquants.com/v2/fins/summary",
       {
         query: { code },
-        headers: { "x-api-key": J_QUANTS_API_TOKEN },
+        headers: { "x-api-key": getJQuantsToken() },
       }
     );
   } catch (e) {
