@@ -16,7 +16,7 @@ const setSpreadSheetName = (): void => {
 
   // スプレッドシートのファイル名を変更
   SpreadsheetApp.getActiveSpreadsheet()
-    .rename(`株｜決算短信推移｜${companyName}(${code}) v3.5.4｜月日`);
+    .rename(`prj｜株｜決算短信推移 v3.7.0｜${companyName}(${code})｜月日`);
 };
 
 /**
